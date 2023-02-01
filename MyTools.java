@@ -1,55 +1,62 @@
+package mypack;
 
-import java.io.IOException;
-import java.util.Locale;
+
 import java.util.Random;
 import java.util.Scanner;
+import java.io.IOException;
 
-public abstract class MyTools {
-	static Random random = new Random();
-	static int[] matrix;
+public class MyTools {
+    public static Scanner scan(){
+        return new Scanner(System.in);
+    }
+    public static void clearPowerShell7() throws IOException {
+        Runtime.getRuntime().exec("powershell.exe clear-host");
+    }
 
-	public static int[] matrixRng(int size, int rangeNum){
-		matrix = new int[size];
-		for (int i = 0; i < matrix.length; i++) {
-			matrix[i]= MyTools.rng(rangeNum);
-		}
-		return matrix;
+    public static void clearWindowsOrLinux(){
+        //Clears Screen in java
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else
+                Runtime.getRuntime().exec("clear");
+        } catch (IOException | InterruptedException ex) {}
+    }
+    public static int rng(int limitInf, int limitSup) throws Exception {
 
-	}
-	public static int[] matrixSorted(int size){
-		size = size +1;
-		matrix = new int[size];
+        class InvalidRangeException extends Exception{
+            private String msg;
+            public InvalidRangeException(String msg){
+                this.msg =  msg;
+            }
+            public String msg(){
+                return msg;
+            }
+        }
 
-		for (int i = 0; i < size; i++) {
-			matrix[i]= i;
-		}
-		return matrix;
-	}
-	public static int rng(int range) {
-		
-		return random.nextInt(range);
-	}
+        Random randomNumber = new Random();
+        int aux=0;
+        try{
+            if (limitInf > limitSup){
+                throw new InvalidRangeException("Inferior limit is greater than Superior limit");
+            } else if (limitInf==limitSup) {
+                return limitSup;
+            } else{
+                aux = randomNumber.nextInt();
+                if (aux >= limitInf && aux <= limitSup){
+                    return aux;
+                }else {
+                    while (aux<limitInf||aux>limitSup){
+                        aux = randomNumber.nextInt();
+                    }
+                }
+            }
+        }
+        catch (InvalidRangeException e){
+            System.out.println(e.msg());
+        }
 
-	public static char monoSpace() {
-		return ' ';
-	}
-
-	public static void clean() {
-		try {
-			if (System.getProperty("os.name").contains("Windows"))
-				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			else
-				Runtime.getRuntime().exec("clear");
-		} catch (IOException | InterruptedException ex) {
-		}
-	}
-
-	public static Scanner scan() {
-		System.out.print(">");
-		return new Scanner(System.in).useLocale(Locale.US);
-
-	}
-
-
+        return aux;
+    }
 
 }
